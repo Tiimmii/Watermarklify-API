@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'rest_framework',
+    'CustomUser',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,7 +70,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Watermarklify_API.wsgi.application'
-AUTH_USER_MODEL = 'customuser.Customuser'
+AUTH_USER_MODEL = 'CustomUser.Customuser'
 
 
 # Database
