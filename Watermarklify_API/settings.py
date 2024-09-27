@@ -69,6 +69,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Watermarklify_API.wsgi.application'
+AUTH_USER_MODEL = 'customuser.Customuser'
 
 
 # Database
