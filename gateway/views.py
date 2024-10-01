@@ -92,3 +92,7 @@ class RequestPasswordResetEmail(GenericAPIView):
         serializer = self.serializer_class(data = data)
         serializer.is_valid(raise_exception=True)
 
+class PasswordTokenCheckAPI(GenericAPIView):
+    def get(self, request, uidb64, token):
+        pass
+
