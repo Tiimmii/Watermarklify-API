@@ -128,8 +128,9 @@ class PasswordTokenCheckAPI(GenericAPIView):
                 return Response({'error': 'Token not valid anymore'}, status=status.HTTP_401_UNAUTHORIZED)
             
 class SetNewPassword(GenericAPIView):
-   serialzer_class = SetNewPasswordSerializer
-   def patch(self, request):
-       serializer = self.serialzer_class(data=request.data)
-       serializer.is_valid(raise_exception=True)
-       return Response({'success':True, 'message': 'password reset success'}, status=status.HTTP_200_OK)
+    serializer_class = SetNewPasswordSerializer
+    def patch(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'success':True, 'message': 'password reset success'}, status=status.HTTP_200_OK)
+   
