@@ -9,6 +9,14 @@ from rest_framework.response import Response
 from .authentication import Authentication, Get_token
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
+from rest_framework import status
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
+from .utils import Util
+
 
 # Create your views here.
 class Loginview(APIView):
@@ -88,9 +96,22 @@ class Getsecuredinfo(APIView):
 class RequestPasswordResetEmail(GenericAPIView):
     serializer_class = RequestPasswordResetEmailSerializer
     def post(self, request):
-        data = {"request": request, "data": request.data}
-        serializer = self.serializer_class(data = data)
-        serializer.is_valid(raise_exception=True)
+        serializer = self.serializer_class(data = request.data) 
+        user =  Customuser.objects.filter(email=request.data['email'])
+        if user.exists():
+            user = user.first()
+            uibd64 =  urlsafe_base64_encode(smart_bytes(user.id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('password-reset-confirm', kwargs={'uidb64': uibd64, 'token': token})
+            absurl = 'http://'+current_site+relativeLink
+            email_body = 'Hi '+user.username + \
+                ' Use the link below to reset your password \n' + absurl
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'Reset Your Password'}
+
+            Util.send_email(data)
+        return Response({'success': 'We have sent you a link to reset your password'}, status = status.HTTP_200_OK)
 
 class PasswordTokenCheckAPI(GenericAPIView):
     def get(self, request, uidb64, token):
