@@ -2,7 +2,8 @@ from django.shortcuts import render
 from .models import Jwt
 from CustomUser.models import Customuser
 from rest_framework.views import APIView
-from .serializers import LoginSerializer, RegisterSerializer, RefreshSerializer
+from rest_framework.generics import GenericAPIView
+from .serializers import LoginSerializer, RegisterSerializer, RefreshSerializer, RequestPasswordResetEmailSerializer
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from .authentication import Authentication, Get_token
@@ -83,3 +84,9 @@ class Getsecuredinfo(APIView):
     def get(self, request):
         print(request.user)
         return Response({"data": "this is a secured info"}, status="200")
+    
+class RequestPasswordResetEmail(GenericAPIView):
+    serializer_class = RequestPasswordResetEmailSerializer
+    def post(self, request):
+        serializer = self.serializer_class(data = request.data)
+        serializer.is_valid(raise_exception=True)

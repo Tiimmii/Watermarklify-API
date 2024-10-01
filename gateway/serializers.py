@@ -11,3 +11,9 @@ class RegisterSerializer(serializers.Serializer):
 
 class RefreshSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
+
+class RequestPasswordResetEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(min_length = 2)
+
+    class meta:
+        fields = ['email']
