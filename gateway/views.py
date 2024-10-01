@@ -88,5 +88,7 @@ class Getsecuredinfo(APIView):
 class RequestPasswordResetEmail(GenericAPIView):
     serializer_class = RequestPasswordResetEmailSerializer
     def post(self, request):
-        serializer = self.serializer_class(data = request.data)
+        data = {"request": request, "data": request.data}
+        serializer = self.serializer_class(data = data)
         serializer.is_valid(raise_exception=True)
+
