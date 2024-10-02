@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1']
 INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'Image_Effects_handler',
     'drf_yasg',
     'CustomUser',
     'gateway',
