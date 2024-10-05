@@ -2,6 +2,7 @@ from PIL import ImageOps, ImageEnhance, Image
 import os
 from CustomUser.models import Customuser
 from .models import UserImages
+from django.conf import settings
 
 class Effects():
     def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
@@ -184,4 +185,12 @@ class Effects():
                 raise ValueError("Invalid filter name. Please choose Apollo, Brannan, Earlybird, Gotham, Hefe, Kelvin, Inkwell, or Lomo.")
         except Exception:
              raise Exception("Unable to apply filter to Image. img, filter_name")
+        
+    def get_image_type(image):
+        my_string = f"{settings.MEDIA_URL}{image.image}"
+        # Find the index of the last occurrence of the period
+        last_index = my_string.rfind('.')
+        # Extract the substring from the last period to the end, or return an empty string if no period is found
+        result = my_string[last_index:] if last_index != -1 else ""
+        return result
 
