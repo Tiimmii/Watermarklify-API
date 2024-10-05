@@ -2,7 +2,7 @@ from django.db import models
 from CustomUser.models import Customuser
 
 # Create your models here.
-class Image(models.Model):
+class UserImages(models.Model):
     user = models.ForeignKey(Customuser, on_delete=models.CASCADE, related_name="loggedin_user_image")
     Image = models.ImageField(upload_to="user_edited_images/")
     created_at = models.DateTimeField(auto_now_add=True)
