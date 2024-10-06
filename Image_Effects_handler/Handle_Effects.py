@@ -1,4 +1,5 @@
 from PIL import ImageOps, ImageEnhance, Image
+import cv2
 import os
 from CustomUser.models import Customuser
 from .models import UserImages
@@ -7,6 +8,7 @@ from django.conf import settings
 
 class Effects():
     def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
+        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
         try:
             return ImageOps.expand(image, (left, top, right, bottom), fill=border_color)
 
@@ -14,12 +16,14 @@ class Effects():
             raise Exception("Unable to place borders. Check image, left, top, right, bottom, border_color")
     
     def crop_image(image, start_x, start_y, end_x, end_y):
+        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
         try:
           return image.crop((start_x, start_y, end_x, end_y))
         except Exception:
             raise Exception("Unable to crop image. Check image, start_x, start_y, end_x, end_y")
         
     def adjust_exposure(image, contrast_factor, brightness_factor):
+        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
         try:
             contrast = ImageEnhance.Contrast(image)
             img = contrast.enhance(contrast_factor)
@@ -33,6 +37,7 @@ class Effects():
             raise Exception("Unable to adjust exposure. Check image, contrast_factor, brightness_factor")
         
     def rotate_image(img, degrees, flip_horizontal=False, flip_vertical=False):
+        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
         # Normalize degrees to the left or right in 90-degree increments
         try:
             if degrees % 90 != 0:
@@ -61,6 +66,7 @@ class Effects():
             raise Exception("Unable to rotate Image. Check img, degrees, flip_horizontal, flip_vertical")
         
     def resize_image(img, width, height, width_unit='px', height_unit='px', mode='contain', aspect_ratio=None):
+        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
         try:
             original_width, original_height = img.size
         
@@ -106,6 +112,7 @@ class Effects():
             raise Exception("Unable to resize Image. Check img, width, height, width_unit, height_unit, mode, aspect_ratio")
         
     def apply_filter(img, filter_name):
+        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
         def apollo(img):
             img = ImageEnhance.Contrast(img).enhance(1.5)  # Increase contrast
             green_overlay = Image.new('RGB', img.size, (144, 238, 144))  # Light green overlay
@@ -194,4 +201,14 @@ class Effects():
         # Extract the substring from the last period to the end, or return an empty string if no period is found
         result = my_string[last_index:] if last_index != -1 else ""
         return result
+    
+    def convert_image(self, image, type):
+        try:
+            image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+            prev_type = self.get_image_type(image)
+            new_type = f"{settings.MEDIA_URL}{image.image}".replace(prev_type, type)
+            image.save(new_type)
+            return new_type  
+        except Exception as e:
+            raise Exception(f"Error: {e}")
 

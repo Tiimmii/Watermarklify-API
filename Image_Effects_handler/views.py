@@ -42,11 +42,23 @@ class Image_Effects(GenericAPIView):
         serializer = self.serializer_class(data = request.data)
         serializer.is_valid(raise_exception=True)
         UserImages.objects.create(user=user, **serializer.validated_data)
+        image = UserImages.objects.filter(user=user).first()
+        user_images = []
+        user_images.append({
+                "image_id": image.id,
+                "name": image.name,
+                "image_type": Effects.get_image_type(image),
+                "image_url": request.build_absolute_uri(image.image.url),
+                "created_at": image.created_at,
+                "updated_at": image.updated_at,
+            })
         return Response({
-            "data": "Uploaded successfully"
+            "data": "Uploaded successfully",
+            "user_images_data": user_images 
         }, status.HTTP_200_OK)
 
 class Handle_Image_Effects(GenericAPIView):
+    serializer_class = HandleUserImagesSerializer
     def get_object(self, pk):
         try:
             return UserImages.objects.get(id=pk)
@@ -71,4 +83,12 @@ class Handle_Image_Effects(GenericAPIView):
         "images_data":  user_images
         })
     def patch(self, request, pk):
-        pass
+        user = request.user
+        try:
+            user_image = self.get_object(pk)
+        except Exception as e:
+            raise Exception(f"error {e}")
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(True)
+        serializer.validated_data["user"] = user
+        

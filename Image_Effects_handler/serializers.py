@@ -52,6 +52,10 @@ class ApplyFilterSerializer(serializers.Serializer):
     image = serializers.CharField(required=True, allow_blank = False)
     filter_name = serializers.CharField(required=True, allow_blank = False)
 
+class ConvertImageTypeSerializer(serializers.Serializer):
+    image = serializers.CharField(required=True, allow_blank = False)
+    type = serializers.CharField(required=True, allow_blank = False)    
+
 # Serializer for handling the image_effects field, which includes add_border and crop_image
 class ImageEffectsSerializer(serializers.Serializer):
     add_border = AddBorderSerializer(required=False)
@@ -60,7 +64,11 @@ class ImageEffectsSerializer(serializers.Serializer):
     resize_image = ResizeImageSerializer(required=False)
     adjust_exposure = AdjustImageExposureSerializer(required=False)
     apply_filter = ApplyFilterSerializer(required=False)
+    convert_image_type = ConvertImageTypeSerializer(required=False)
 
 class HandleUserImagesSerializer(serializers.Serializer):
     user = UserSerializer
     image_effects = ImageEffectsSerializer(required=False)
+
+    class meta:
+        fields = ['image_effects']
