@@ -4,6 +4,7 @@ from CustomUser.models import Customuser
 from .models import UserImages
 from django.conf import settings
 
+
 class Effects():
     def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
         try:

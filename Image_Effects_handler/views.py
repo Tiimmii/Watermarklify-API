@@ -70,3 +70,5 @@ class Handle_Image_Effects(GenericAPIView):
         },
         "images_data":  user_images
         })
+    def patch(self, request, pk):
+        pass
