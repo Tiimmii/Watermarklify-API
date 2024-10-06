@@ -42,6 +42,9 @@ class Image_Effects(GenericAPIView):
         serializer = self.serializer_class(data = request.data)
         serializer.is_valid(raise_exception=True)
         UserImages.objects.create(user=user, **serializer.validated_data)
+        return Response({
+            "data": "Uploaded successfully"
+        }, status.HTTP_200_OK)
 
 class Handle_Image_Effects(GenericAPIView):
     def get_object(self, pk):

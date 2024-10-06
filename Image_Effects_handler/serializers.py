@@ -5,7 +5,7 @@ from .models import UserImages
 class CreateNewImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserImages
-        fields = ['image']
+        fields = ['name','image']
 
 class HandleUserImagesSerializer(serializers.Serializer):
     pass
