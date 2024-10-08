@@ -8,7 +8,9 @@ from django.conf import settings
 
 class Effects():
     def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
-        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+        print(f"Media/{image.image}")
+        image = Image.open(f"Media/{image}")
+        print(f"Media/{image.image}")
         try:
             return ImageOps.expand(image, (left, top, right, bottom), fill=border_color)
 

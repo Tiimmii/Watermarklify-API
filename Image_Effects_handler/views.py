@@ -9,6 +9,7 @@ from rest_framework import status
 from django.conf import settings
 from .Handle_Effects import Effects
 from django.http import Http404
+import ast
 # Create your views here.
 
 
@@ -89,6 +90,14 @@ class Handle_Image_Effects(GenericAPIView):
         except Exception as e:
             raise Exception(f"error {e}")
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(True)
-        serializer.validated_data["user"] = user
-        
+        serializer.is_valid(raise_exception=True)
+        s = serializer.validated_data
+        s["user"] = user
+        if s["image_effects"]=={}:
+            return;
+        else:
+            if s["image_effects"]["add_border"]!={}:
+                p = s["image_effects"]["add_border"]
+                patched_image = Effects.add_border(user_image.image, p["left"], p["top"], p["right"], p["bottom"], ast.literal_eval(p["border_color"]))
+                patched_image.save("Media/") 
+
