@@ -7,6 +7,7 @@ from django.conf import settings
 
 
 class Effects():
+    @staticmethod
     def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
         img = Image.open(image)
         try:
@@ -14,14 +15,14 @@ class Effects():
         except Exception as e:
             print(f"Error: {e}")
             raise Exception("Unable to place borders. Check image, left, top, right, bottom, border_color")
-    
+    @staticmethod
     def crop_image(image, start_x, start_y, end_x, end_y):
         img = Image.open(image)
         try:
           return image.crop((start_x, start_y, end_x, end_y))
         except Exception:
             raise Exception("Unable to crop image. Check image, start_x, start_y, end_x, end_y")
-        
+    @staticmethod    
     def adjust_exposure(image, contrast_factor, brightness_factor):
         img = Image.open(image)
         try:
@@ -35,7 +36,7 @@ class Effects():
             return img
         except:
             raise Exception("Unable to adjust exposure. Check image, contrast_factor, brightness_factor")
-        
+    @staticmethod    
     def rotate_image(img, degrees, flip_horizontal=False, flip_vertical=False):
         img = Image.open(img)
         # Normalize degrees to the left or right in 90-degree increments
@@ -64,7 +65,7 @@ class Effects():
             return img
         except Exception:
             raise Exception("Unable to rotate Image. Check img, degrees, flip_horizontal, flip_vertical")
-        
+    @staticmethod    
     def resize_image(img, width, height, width_unit='px', height_unit='px', mode='contain', aspect_ratio=None):
         img = Image.open(img)
         try:
@@ -110,7 +111,7 @@ class Effects():
             return img
         except Exception:
             raise Exception("Unable to resize Image. Check img, width, height, width_unit, height_unit, mode, aspect_ratio")
-        
+    @staticmethod    
     def apply_filter(img, filter_name):
         img = Image.open(img)
         def apollo(img):
@@ -194,21 +195,26 @@ class Effects():
         except Exception:
              raise Exception("Unable to apply filter to Image. img, filter_name")
         
-    def get_image_type(image):
+    @staticmethod    
+    def get_image_type(image, option):
         my_string = f"{settings.MEDIA_URL}{image.image}"
         # Find the index of the last occurrence of the period
         last_index = my_string.rfind('.')
         # Extract the substring from the last period to the end, or return an empty string if no period is found
-        result = my_string[last_index:] if last_index != -1 else ""
+        if option==">":
+            result = my_string[last_index:] if last_index != -1 else ""
+        else:    
+            result = my_string[:last_index] if last_index != -1 else my_string
         return result
-    
-    def convert_image(self, image, type):
+    @staticmethod
+    def convert_image(image_path):
         try:
-            image = Image.open(image)
-            prev_type = self.get_image_type(image)
-            new_type = f"{settings.MEDIA_URL}{image.image}".replace(prev_type, type)
-            image.save(new_type)
-            return new_type  
+            # image = Image.open(image_a_path)
+            prev_type = Effects.get_image_type(image_path, "<")
+            # new_type = f"Media/{image_path.image}".replace(prev_type, type)
+            # image.save(new_type)
+            # print(new_type)
+            return prev_type 
         except Exception as e:
             raise Exception(f"Error: {e}")
 
