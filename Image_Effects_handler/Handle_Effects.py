@@ -8,24 +8,22 @@ from django.conf import settings
 
 class Effects():
     def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
-        print(f"Media/{image.image}")
-        image = Image.open(f"Media/{image}")
-        print(f"Media/{image.image}")
+        img = Image.open(image)
         try:
-            return ImageOps.expand(image, (left, top, right, bottom), fill=border_color)
-
-        except Exception:
+            return ImageOps.expand(img, (left, top, right, bottom), fill=border_color)
+        except Exception as e:
+            print(f"Error: {e}")
             raise Exception("Unable to place borders. Check image, left, top, right, bottom, border_color")
     
     def crop_image(image, start_x, start_y, end_x, end_y):
-        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+        img = Image.open(image)
         try:
           return image.crop((start_x, start_y, end_x, end_y))
         except Exception:
             raise Exception("Unable to crop image. Check image, start_x, start_y, end_x, end_y")
         
     def adjust_exposure(image, contrast_factor, brightness_factor):
-        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+        img = Image.open(image)
         try:
             contrast = ImageEnhance.Contrast(image)
             img = contrast.enhance(contrast_factor)
@@ -39,7 +37,7 @@ class Effects():
             raise Exception("Unable to adjust exposure. Check image, contrast_factor, brightness_factor")
         
     def rotate_image(img, degrees, flip_horizontal=False, flip_vertical=False):
-        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+        img = Image.open(img)
         # Normalize degrees to the left or right in 90-degree increments
         try:
             if degrees % 90 != 0:
@@ -68,7 +66,7 @@ class Effects():
             raise Exception("Unable to rotate Image. Check img, degrees, flip_horizontal, flip_vertical")
         
     def resize_image(img, width, height, width_unit='px', height_unit='px', mode='contain', aspect_ratio=None):
-        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+        img = Image.open(img)
         try:
             original_width, original_height = img.size
         
@@ -114,7 +112,7 @@ class Effects():
             raise Exception("Unable to resize Image. Check img, width, height, width_unit, height_unit, mode, aspect_ratio")
         
     def apply_filter(img, filter_name):
-        image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+        img = Image.open(img)
         def apollo(img):
             img = ImageEnhance.Contrast(img).enhance(1.5)  # Increase contrast
             green_overlay = Image.new('RGB', img.size, (144, 238, 144))  # Light green overlay
@@ -206,7 +204,7 @@ class Effects():
     
     def convert_image(self, image, type):
         try:
-            image = Image.open(f"{settings.MEDIA_URL}{image.image}")
+            image = Image.open(image)
             prev_type = self.get_image_type(image)
             new_type = f"{settings.MEDIA_URL}{image.image}".replace(prev_type, type)
             image.save(new_type)

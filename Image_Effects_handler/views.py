@@ -89,6 +89,15 @@ class Handle_Image_Effects(GenericAPIView):
             user_image = self.get_object(pk)
         except Exception as e:
             raise Exception(f"error {e}")
+        user_images = []
+        user_images.append({
+                "image_id": user_image.id,
+                "name": user_image.name,
+                "image_type": Effects.get_image_type(user_image),
+                "image_url": request.build_absolute_uri(user_image.image.url),
+                "created_at": user_image.created_at,
+                "updated_at": user_image.updated_at,
+            })
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         s = serializer.validated_data
@@ -98,6 +107,6 @@ class Handle_Image_Effects(GenericAPIView):
         else:
             if s["image_effects"]["add_border"]!={}:
                 p = s["image_effects"]["add_border"]
-                patched_image = Effects.add_border(user_image.image, p["left"], p["top"], p["right"], p["bottom"], ast.literal_eval(p["border_color"]))
-                patched_image.save("Media/") 
-
+                patched_image = Effects.add_border(user_image.image.path, p["left"], p["top"], p["right"], p["bottom"], ast.literal_eval(p["border_color"]))
+                patched_image.save(user_image.image.path)
+                return Response({"data":"Effect Applied Successfully", "image_data":user_images}, status=status.HTTP_200_OK) 
