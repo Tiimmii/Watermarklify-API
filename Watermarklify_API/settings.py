@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'debug_toolbar',
 ]
 
@@ -96,10 +98,10 @@ AUTH_USER_MODEL = 'CustomUser.Customuser'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),         # Same as POSTGRES_DB in docker-compose
-        'USER': config('DB_USER'),             # Same as POSTGRES_USER
-        'PASSWORD': config('DB_PASSWORD'),     # Same as POSTGRES_PASSWORD
-        'HOST': '127.0.0.1',                 # Service name defined in docker-compose
+        'NAME': config('DB_NAME'),         
+        'USER': config('DB_USER'),             
+        'PASSWORD': config('DB_PASSWORD'),     
+        'HOST': '127.0.0.1',                 
         'PORT': config('DB_PORT'),
     }
 }
@@ -138,10 +140,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+MEDIA_URL = '/media/'
 STATIC_URL = 'static/'
-MEDIA_URL = 'Media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'Media')
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -158,3 +159,12 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUD_NAME"),
+    "API_KEY": config("API_KEYS"),
+    "API_SECRET": config("API_SECRETS"),
+}
+
+
+
