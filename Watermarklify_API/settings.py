@@ -31,6 +31,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1']
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # Application definition
@@ -43,7 +44,6 @@ INSTALLED_APPS = [
     'CustomUser',
     'gateway',
     'cloudinary_storage',
-    'cloudinary',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -143,9 +143,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-MEDIA_URL = '/media/'
 STATIC_URL = 'static/'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -163,11 +161,11 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": config("CLOUD_NAME"),
-    "API_KEY": config("API_KEYS"),
-    "API_SECRET": config("API_SECRETS"),
-}
+cloudinary.config( 
+  	cloud_name = config("CLOUD_NAME"),
+  	api_key = config("API_KEYS"),
+  	api_secret = config("API_SECRETS"),
+)
 
 
-
+CLOUDINARY_FOLDER_PATH = config("CLOUDINARY_FOLDER_PATH")
