@@ -2,15 +2,19 @@ from rest_framework import serializers
 from CustomUser.models import Customuser
 from .models import UserImages
 
-class CreateNewImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserImages
-        fields = ['name','image']
     
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customuser
         fields = ['id', 'username', 'email']
+
+class CreateNewImageSerializer(serializers.ModelSerializer):
+
+    image = serializers.ImageField(required=True)
+
+    class Meta:
+        model = UserImages
+        fields = ['name','image']
 
 class AddBorderSerializer(serializers.Serializer):
     left = serializers.IntegerField(required=True)

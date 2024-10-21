@@ -29,7 +29,7 @@ class Image_Effects(GenericAPIView):
                 "image_id": image.id,
                 "name": image.name,
                 "image_type": Effects.get_image_type(image, ">"),
-                "image_url": request.build_absolute_uri(image.image.url),
+                "image_url": image.image,
                 "created_at": image.created_at,
                 "updated_at": image.updated_at,
             })
@@ -51,7 +51,7 @@ class Image_Effects(GenericAPIView):
                 "image_id": image.id,
                 "name": image.name,
                 "image_type": Effects.get_image_type(image, ">"),
-                "image_url": request.build_absolute_uri(image.image.url),
+                "image_url": image.image,
                 "created_at": image.created_at,
                 "updated_at": image.updated_at,
             })

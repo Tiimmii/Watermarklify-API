@@ -4,11 +4,12 @@ from .cloudinary import upload_to_cloudinary
 
 # Create your models here.
 class HandleImageCreation(models.Manager):
-    def create_image(self, user, image):
+    def create_image(self, user, name, image):
         if not image:
             raise ValueError("Input Image is required")
         
         user_image = self.model(user=user)
+        user_image.name = name
         user_image.image = upload_to_cloudinary(image)
         user_image.save()
         return user_image
@@ -17,7 +18,7 @@ class HandleImageCreation(models.Manager):
 class UserImages(models.Model):
     user = models.ForeignKey(Customuser, on_delete=models.CASCADE, related_name="loggedin_user_image")
     name = models.CharField(max_length=100)
-    image = models.URLField(blank=True)  # Changed from ImageField to URLField
+    image = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
