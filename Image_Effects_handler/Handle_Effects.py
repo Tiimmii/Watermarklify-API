@@ -1,13 +1,34 @@
 from PIL import ImageOps, ImageEnhance, Image
 from django.conf import settings
+import io
+from io import BytesIO
+import requests
 
 
 class Effects():
     @staticmethod
     def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
-        img = Image.open(image)
         try:
-            return ImageOps.expand(img, (left, top, right, bottom), fill=border_color)
+            response = requests.get(image)
+            response.raise_for_status()  # Check if the request was successful
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading image: {e}")
+            raise Exception("Unable to download image from the URL.")
+        
+        try:
+            img = Image.open(BytesIO(response.content))
+            print("byte worked")
+        except Exception as e:
+            print(f"Error opening image: {e}")
+            raise Exception("Unable to open image.")
+        
+        try:
+            img_with_border = ImageOps.expand(img, (left, top, right, bottom), fill=border_color)
+            img_with_border=img_with_border.convert('RGB')
+            img_bytes = io.BytesIO()
+            img_with_border.save(img_bytes, format='JPEG') 
+            img_bytes.seek(0)
+            return img_bytes
         except Exception as e:
             print(f"Error: {e}")
             raise Exception("Unable to place borders. Check image, left, top, right, bottom, border_color")

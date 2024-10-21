@@ -18,5 +18,9 @@ def upload_to_cloudinary(image, old_public_id=None):
     # Upload the new image to Cloudinary
     uploaded_image = upload(image, public_id=public_id, overwrite=True)
     uploaded_image_url = uploaded_image["secure_url"]
+    uploaded_public_id = uploaded_image["public_id"]
 
-    return uploaded_image_url
+    return  {
+        'secure_url': uploaded_image_url,
+        'public_id': uploaded_public_id
+    }

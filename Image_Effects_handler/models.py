@@ -8,9 +8,11 @@ class HandleImageCreation(models.Manager):
         if not image:
             raise ValueError("Input Image is required")
         
+        uploaded_image_data = upload_to_cloudinary(image)
         user_image = self.model(user=user)
         user_image.name = name
-        user_image.image = upload_to_cloudinary(image)
+        user_image.image = uploaded_image_data["secure_url"]
+        user_image.public_id = uploaded_image_data["public_id"]
         user_image.save()
         return user_image
 
@@ -19,6 +21,7 @@ class UserImages(models.Model):
     user = models.ForeignKey(Customuser, on_delete=models.CASCADE, related_name="loggedin_user_image")
     name = models.CharField(max_length=100)
     image = models.URLField(blank=True)
+    public_id = models.CharField(max_length=1000, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
