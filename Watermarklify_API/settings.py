@@ -163,11 +163,11 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 
-cloudinary.config (
-    cloud_name = config("CLOUD_NAME"),
-    api_key = config("API_KEYS"),
-    api_secret = config("API_SECRETS")
-)
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUD_NAME"),
+    "API_KEY": config("API_KEYS"),
+    "API_SECRET": config("API_SECRETS"),
+}
 
 
 
