@@ -10,12 +10,10 @@ from django.conf import settings
 from .Handle_Effects import Effects
 from django.http import Http404
 from django.core.files.images import ImageFile
-from PIL import Image 
+from PIL import Image
 import ast
 import os
-from django.core.files.base import ContentFile
 # Create your views here.
-
 
 class Image_Effects(GenericAPIView):
     # authentication_classes = [Authentication]
@@ -46,7 +44,7 @@ class Image_Effects(GenericAPIView):
         user = request.user
         serializer = self.serializer_class(data = request.data)
         serializer.is_valid(raise_exception=True)
-        UserImages.objects.create(user=user, **serializer.validated_data)
+        UserImages.objects.create_image(user=user, **serializer.validated_data)
         image = UserImages.objects.filter(user=user).first()
         user_images = []
         user_images.append({

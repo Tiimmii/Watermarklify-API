@@ -1,13 +1,27 @@
 from django.db import models
 from CustomUser.models import Customuser
+from .cloudinary import upload_to_cloudinary
 
 # Create your models here.
+class HandleImageCreation(models.Manager):
+    def create_image(self, user, image):
+        if not image:
+            raise ValueError("Input Image is required")
+        
+        user_image = self.model(user=user)
+        user_image.image = upload_to_cloudinary(image)
+        user_image.save()
+        return user_image
+
+# Model to store user images
 class UserImages(models.Model):
     user = models.ForeignKey(Customuser, on_delete=models.CASCADE, related_name="loggedin_user_image")
     name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to="WATERMARKLIFY_IMAGES", blank=True)
+    image = models.URLField(blank=True)  # Changed from ImageField to URLField
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    objects = HandleImageCreation()  # Use the custom manager
 
     def __str__(self):
         return f"Image by {self.user.username} - {self.created_at.strftime('%Y-%m-%d')}"
