@@ -217,6 +217,7 @@ class Effects():
         except Exception as e:
             print(f"Error opening image: {e}")
             raise Exception("Unable to open image.")
+        
         def apollo(img):
             img = ImageEnhance.Contrast(img).enhance(1.5)  # Increase contrast
             green_overlay = Image.new('RGB', img.size, (144, 238, 144))  # Light green overlay
@@ -304,7 +305,7 @@ class Effects():
             img_bytes.seek(0)
             return img_bytes
         except Exception:
-             raise Exception("Unable to apply filter to Image. img, filter_name")
+             raise Exception("Unable to apply filter to Image. check img, filter_name")
         
     @staticmethod    
     def get_image_type(image, option):
@@ -319,14 +320,28 @@ class Effects():
             result = my_string[:last_index] if last_index != -1 else my_string
         return result
     @staticmethod
-    def convert_image(image_path):
+    def convert_image_type(image, type):
         try:
-            # image = Image.open(image_a_path)
-            prev_type = Effects.get_image_type(image_path, "<")
-            # new_type = f"Media/{image_path.image}".replace(prev_type, type)
-            # image.save(new_type)
-            # print(new_type)
-            return prev_type 
+            response = requests.get(image)
+            response.raise_for_status()  # Check if the request was successful
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading image: {e}")
+            raise Exception("Unable to download image from the URL.")
+        try:
+            img = Image.open(BytesIO(response.content))
+            print("byte worked")
+        except Exception as e:
+            print(f"Error opening image: {e}")
+            raise Exception("Unable to open image.") 
+        try:
+            img = img.convert('RGB')
+            img_bytes = io.BytesIO()
+            if type=='jpg':
+                img.save(img_bytes, format='JPEG')
+            else:
+                img.save(img_bytes, format= type.upper())
+            img_bytes.seek(0)
+            return img_bytes
         except Exception as e:
             raise Exception(f"Error: {e}")
 
