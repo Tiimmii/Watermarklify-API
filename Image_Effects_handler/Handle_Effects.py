@@ -29,7 +29,7 @@ class Effects():
             if type=='.jpg':
                 img_with_border.save(img_bytes, format='JPEG')
             else:
-                img_with_border.save(img_bytes, format= type[:1].upper()) 
+                img_with_border.save(img_bytes, format= type[1:].upper()) 
             img_bytes.seek(0)
             return img_bytes
         except Exception as e:
@@ -56,7 +56,7 @@ class Effects():
             if type=='.jpg':
                 cropped_image.save(img_bytes, format='JPEG')
             else:
-                cropped_image.save(img_bytes, format= type[:1].upper()) 
+                cropped_image.save(img_bytes, format= type[1:].upper()) 
             img_bytes.seek(0)
             return img_bytes
         except Exception:
@@ -88,7 +88,7 @@ class Effects():
             if type=='.jpg':
                 img.save(img_bytes, format='JPEG')
             else:
-                img.save(img_bytes, format= type[:1].upper()) 
+                img.save(img_bytes, format= type[1:].upper()) 
             img_bytes.seek(0)
             return img_bytes
         except:
@@ -134,14 +134,25 @@ class Effects():
             if type=='.jpg':
                 img.save(img_bytes, format='JPEG')
             else:
-                img.save(img_bytes, format= type[:1].upper()) 
+                img.save(img_bytes, format= type[1:].upper()) 
             img_bytes.seek(0)
             return img_bytes
         except Exception:
             raise Exception("Unable to rotate Image. Check img, degrees, flip_horizontal, flip_vertical")
     @staticmethod    
-    def resize_image(img, width, height, width_unit='px', height_unit='px', mode='contain', aspect_ratio=None, type='.jpg'):
-        img = Image.open(img)
+    def resize_image(image, width, height, width_unit='px', height_unit='px', mode='contain', aspect_ratio=None, type='.jpg'):
+        try:
+            response = requests.get(image)
+            response.raise_for_status()  # Check if the request was successful
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading image: {e}")
+            raise Exception("Unable to download image from the URL.")
+        try:
+            img = Image.open(BytesIO(response.content))
+            print("byte worked")
+        except Exception as e:
+            print(f"Error opening image: {e}")
+            raise Exception("Unable to open image.")
         try:
             original_width, original_height = img.size
         
@@ -182,12 +193,30 @@ class Effects():
             else:
                 raise ValueError("Mode must be 'trim', 'stretch', or 'contain'")
             
-            return img
+            img = img.convert('RGB')
+            img_bytes = io.BytesIO()
+            if type=='.jpg':
+                img.save(img_bytes, format='JPEG')
+            else:
+                img.save(img_bytes, format= type[1:].upper()) 
+            img_bytes.seek(0)
+            return img_bytes
         except Exception:
             raise Exception("Unable to resize Image. Check img, width, height, width_unit, height_unit, mode, aspect_ratio")
     @staticmethod    
-    def apply_filter(img, filter_name, type):
-        img = Image.open(img)
+    def apply_filter(image, filter_name, type):
+        try:
+            response = requests.get(image)
+            response.raise_for_status()  # Check if the request was successful
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading image: {e}")
+            raise Exception("Unable to download image from the URL.")
+        try:
+            img = Image.open(BytesIO(response.content))
+            print("byte worked")
+        except Exception as e:
+            print(f"Error opening image: {e}")
+            raise Exception("Unable to open image.")
         def apollo(img):
             img = ImageEnhance.Contrast(img).enhance(1.5)  # Increase contrast
             green_overlay = Image.new('RGB', img.size, (144, 238, 144))  # Light green overlay
@@ -249,23 +278,31 @@ class Effects():
         try:
             # Apply the selected filter
             if filter_name.lower() == 'apollo':
-                apollo(img)
+                img = apollo(img)
             elif filter_name.lower() == 'brannan':
-                brannan(img)
+                img = brannan(img)
             elif filter_name.lower() == 'earlybird':
-                earlybird(img)
+                img = earlybird(img)
             elif filter_name.lower() == 'gotham':
-                gotham(img)
+                img = gotham(img)
             elif filter_name.lower() == 'hefe':
-                hefe(img)
+                img = hefe(img)
             elif filter_name.lower() == 'kelvin':
-                kelvin(img)
+                img = kelvin(img)
             elif filter_name.lower() == 'inkwell':
-                inkwell(img)
+                img = inkwell(img)
             elif filter_name.lower() == 'lomo':
-               lomo(img)
+               img = lomo(img)
             else:
                 raise ValueError("Invalid filter name. Please choose Apollo, Brannan, Earlybird, Gotham, Hefe, Kelvin, Inkwell, or Lomo.")
+            img = img.convert('RGB')
+            img_bytes = io.BytesIO()
+            if type=='.jpg':
+                img.save(img_bytes, format='JPEG')
+            else:
+                img.save(img_bytes, format= type[1:].upper()) 
+            img_bytes.seek(0)
+            return img_bytes
         except Exception:
              raise Exception("Unable to apply filter to Image. img, filter_name")
         

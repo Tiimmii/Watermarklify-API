@@ -9,10 +9,11 @@ class HandleImageCreation(models.Manager):
             raise ValueError("Input Image is required")
         
         uploaded_image_data = upload_to_cloudinary(image)
+        print(uploaded_image_data)
         user_image = self.model(user=user)
         user_image.name = name
-        user_image.image = uploaded_image_data["secure_url"]
-        user_image.public_id = uploaded_image_data["public_id"]
+        user_image.image = uploaded_image_data[0]
+        user_image.public_id = uploaded_image_data[1]
         user_image.save()
         return user_image
 

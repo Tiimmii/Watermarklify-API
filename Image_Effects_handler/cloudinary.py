@@ -20,7 +20,6 @@ def upload_to_cloudinary(image, old_public_id=None):
     uploaded_image_url = uploaded_image["secure_url"]
     uploaded_public_id = uploaded_image["public_id"]
 
-    return  {
-        'secure_url': uploaded_image_url,
-        'public_id': uploaded_public_id
-    }
+    return  [uploaded_image_url, uploaded_public_id]
+        
+    
