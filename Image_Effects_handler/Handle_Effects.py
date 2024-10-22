@@ -7,7 +7,7 @@ import requests
 
 class Effects():
     @staticmethod
-    def add_border(image, left, top, right, bottom, border_color=(0, 0, 0)):
+    def add_border(image, left, top, right, bottom, border_color=(0, 0, 0), type='.jpg'):
         try:
             response = requests.get(image)
             response.raise_for_status()  # Check if the request was successful
@@ -24,39 +24,89 @@ class Effects():
         
         try:
             img_with_border = ImageOps.expand(img, (left, top, right, bottom), fill=border_color)
-            img_with_border=img_with_border.convert('RGB')
+            img_with_border = img_with_border.convert('RGB')
             img_bytes = io.BytesIO()
-            img_with_border.save(img_bytes, format='JPEG') 
+            if type=='.jpg':
+                img_with_border.save(img_bytes, format='JPEG')
+            else:
+                img_with_border.save(img_bytes, format= type[:1].upper()) 
             img_bytes.seek(0)
             return img_bytes
         except Exception as e:
             print(f"Error: {e}")
             raise Exception("Unable to place borders. Check image, left, top, right, bottom, border_color")
     @staticmethod
-    def crop_image(image, start_x, start_y, end_x, end_y):
-        img = Image.open(image)
+    def crop_image(image, start_x, start_y, end_x, end_y, type):
         try:
-          return image.crop((start_x, start_y, end_x, end_y))
+            response = requests.get(image)
+            response.raise_for_status()  # Check if the request was successful
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading image: {e}")
+            raise Exception("Unable to download image from the URL.")
+        try:
+            img = Image.open(BytesIO(response.content))
+            print("byte worked")
+        except Exception as e:
+            print(f"Error opening image: {e}")
+            raise Exception("Unable to open image.")
+        try:
+            cropped_image = img.crop((start_x, start_y, end_x, end_y))
+            cropped_image = cropped_image.convert('RGB')
+            img_bytes = io.BytesIO()
+            if type=='.jpg':
+                cropped_image.save(img_bytes, format='JPEG')
+            else:
+                cropped_image.save(img_bytes, format= type[:1].upper()) 
+            img_bytes.seek(0)
+            return img_bytes
         except Exception:
             raise Exception("Unable to crop image. Check image, start_x, start_y, end_x, end_y")
     @staticmethod    
-    def adjust_exposure(image, contrast_factor, brightness_factor):
-        img = Image.open(image)
+    def adjust_exposure(image, contrast_factor, brightness_factor, type):
         try:
-            contrast = ImageEnhance.Contrast(image)
+            response = requests.get(image)
+            response.raise_for_status()  # Check if the request was successful
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading image: {e}")
+            raise Exception("Unable to download image from the URL.")
+        try:
+            img = Image.open(BytesIO(response.content))
+            print("byte worked")
+        except Exception as e:
+            print(f"Error opening image: {e}")
+            raise Exception("Unable to open image.")
+        try:
+            contrast = ImageEnhance.Contrast(img)
             img = contrast.enhance(contrast_factor)
 
             # Adjust brightness
             brightness = ImageEnhance.Brightness(img)
             img = brightness.enhance(brightness_factor)
 
-            return img
+            img = img.convert('RGB')
+            img_bytes = io.BytesIO()
+            if type=='.jpg':
+                img.save(img_bytes, format='JPEG')
+            else:
+                img.save(img_bytes, format= type[:1].upper()) 
+            img_bytes.seek(0)
+            return img_bytes
         except:
             raise Exception("Unable to adjust exposure. Check image, contrast_factor, brightness_factor")
     @staticmethod    
-    def rotate_image(img, degrees, flip_horizontal=False, flip_vertical=False):
-        img = Image.open(img)
-        # Normalize degrees to the left or right in 90-degree increments
+    def rotate_image(image, degrees, flip_horizontal=False, flip_vertical=False, type='.jpg'):
+        try:
+            response = requests.get(image)
+            response.raise_for_status()  # Check if the request was successful
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading image: {e}")
+            raise Exception("Unable to download image from the URL.")
+        try:
+            img = Image.open(BytesIO(response.content))
+            print("byte worked")
+        except Exception as e:
+            print(f"Error opening image: {e}")
+            raise Exception("Unable to open image.")
         try:
             if degrees % 90 != 0:
                 raise ValueError("Degrees should be a multiple of 90")
@@ -79,11 +129,18 @@ class Effects():
             
             if flip_vertical:
                 img = img.transpose(Image.FLIP_TOP_BOTTOM)
-            return img
+            img = img.convert('RGB')
+            img_bytes = io.BytesIO()
+            if type=='.jpg':
+                img.save(img_bytes, format='JPEG')
+            else:
+                img.save(img_bytes, format= type[:1].upper()) 
+            img_bytes.seek(0)
+            return img_bytes
         except Exception:
             raise Exception("Unable to rotate Image. Check img, degrees, flip_horizontal, flip_vertical")
     @staticmethod    
-    def resize_image(img, width, height, width_unit='px', height_unit='px', mode='contain', aspect_ratio=None):
+    def resize_image(img, width, height, width_unit='px', height_unit='px', mode='contain', aspect_ratio=None, type='.jpg'):
         img = Image.open(img)
         try:
             original_width, original_height = img.size
@@ -129,7 +186,7 @@ class Effects():
         except Exception:
             raise Exception("Unable to resize Image. Check img, width, height, width_unit, height_unit, mode, aspect_ratio")
     @staticmethod    
-    def apply_filter(img, filter_name):
+    def apply_filter(img, filter_name, type):
         img = Image.open(img)
         def apollo(img):
             img = ImageEnhance.Contrast(img).enhance(1.5)  # Increase contrast
@@ -214,7 +271,8 @@ class Effects():
         
     @staticmethod    
     def get_image_type(image, option):
-        my_string = f"{settings.MEDIA_URL}{image.image}"
+        my_string = image.image
+        print(my_string)
         # Find the index of the last occurrence of the period
         last_index = my_string.rfind('.')
         # Extract the substring from the last period to the end, or return an empty string if no period is found

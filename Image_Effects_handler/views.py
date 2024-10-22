@@ -94,63 +94,54 @@ class Handle_Image_Effects(GenericAPIView):
             raise Exception(f"error {e}")
         
         old_public_id = user_image.public_id
-        user_images = []
-        user_images.append({
-                "image_id": user_image.id,
-                "name": user_image.name,
-                "image_type": Effects.get_image_type(user_image, ">"),
-                "image_url": user_image.image,
-                "created_at": user_image.created_at,
-                "updated_at": user_image.updated_at,
-            })
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         s = serializer.validated_data
         s["user"] = user
         image_effects = s.get("image_effects", {})
-        R = Response({"data":"No Effect Applied Successfully", "image_data":user_images}, status=status.HTTP_200_OK)
+        R = Response({"data":"No Effect Applied Successfully"}, status=status.HTTP_200_OK)
         if not image_effects:
             return R
         else:
             if "add_border" in image_effects:
                 e = image_effects["add_border"]
                 # Apply border, then upload to Cloudinary
-                patched_image = Effects.add_border(user_image.image, e["left"], e["top"], e["right"], e["bottom"], ast.literal_eval(e["border_color"]))
+                patched_image = Effects.add_border(user_image.image, e["left"], e["top"], e["right"], e["bottom"], ast.literal_eval(e["border_color"]), Effects.get_image_type(user_image, ">"))
                 patched_image_url = upload_to_cloudinary(patched_image, old_public_id)  # Re-upload the modified image to Cloudinary
                 user_image.image = patched_image_url
                 user_image.save()
 
             if "crop_image" in image_effects:
                 e = image_effects["crop_image"]
-                cropped_image = Effects.crop_image(user_image.image, e["start_x"], e["start_y"], e["end_x"], e["end_y"])
+                cropped_image = Effects.crop_image(user_image.image, e["start_x"], e["start_y"], e["end_x"], e["end_y"], Effects.get_image_type(user_image, ">"))
                 cropped_image_url = upload_to_cloudinary(cropped_image, old_public_id)  # Re-upload the cropped image
                 user_image.image = cropped_image_url
                 user_image.save()
 
             if "rotate_image" in image_effects:
                 e = image_effects["rotate_image"]
-                rotated_image = Effects.rotate_image(user_image.image, e["degrees"], e["flip_horizontal"], e["flip_vertical"])
+                rotated_image = Effects.rotate_image(user_image.image, e["degrees"], e["flip_horizontal"], e["flip_vertical"], Effects.get_image_type(user_image, ">"))
                 rotated_image_url = upload_to_cloudinary(rotated_image, old_public_id)  # Re-upload the rotated image
                 user_image.image = rotated_image_url
                 user_image.save()
 
             if "resize_image" in image_effects:
                 e = image_effects["resize_image"]
-                resized_image = Effects.resize_image(user_image.image, e["width"], e["height"], e["width_unit"], e["height_unit"], e["mode"], e["aspect_ratio"])
+                resized_image = Effects.resize_image(user_image.image, e["width"], e["height"], e["width_unit"], e["height_unit"], e["mode"], e["aspect_ratio"], Effects.get_image_type(user_image, ">"))
                 resized_image_url = upload_to_cloudinary(resized_image, old_public_id)  # Re-upload the resized image
                 user_image.image = resized_image_url
                 user_image.save()
 
             if "adjust_exposure" in image_effects:
                 e = image_effects["adjust_exposure"]
-                adjusted_exposure = Effects.adjust_exposure(user_image.image, e["contrast_factor"], e["brightness_factor"])
+                adjusted_exposure = Effects.adjust_exposure(user_image.image, e["contrast_factor"], e["brightness_factor"], Effects.get_image_type(user_image, ">"))
                 adjusted_exposure_url = upload_to_cloudinary(adjusted_exposure, old_public_id)  # Re-upload the image with adjusted exposure
                 user_image.image = adjusted_exposure_url
                 user_image.save()
 
             if "apply_filter" in image_effects:
                 e = image_effects["apply_filter"]
-                filtered_image = Effects.apply_filter(user_image.image, e["filter_name"])
+                filtered_image = Effects.apply_filter(user_image.image, e["filter_name"], Effects.get_image_type(user_image, ">"))
                 filtered_image_url = upload_to_cloudinary(filtered_image, old_public_id)  # Re-upload the image with applied filter
                 user_image.image = filtered_image_url
                 user_image.save()
